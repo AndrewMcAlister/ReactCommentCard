@@ -3,6 +3,7 @@ import "./App.css";
 import CommentsData from "./CommentsData";
 import CommentsSection from "./CommentsSection";
 import jsonFile from "./data.json";
+import Comment from "./Comment";
 
 function App() {
   const [commentsData, setCommentsData] = useState<CommentsData>(
@@ -33,6 +34,25 @@ function App() {
     window.localStorage.setItem("COMMENTS_DATA", JSON.stringify(cd));
     setCommentsData(cd); //why invalid hook call
   }, []);
+
+  function getAllIds(commentsTree: Comment[], result: number[]): number[] {
+    commentsTree.map((item) => {
+      result.push(item.id);
+      if (item.replies) getAllIds(item.replies, result);
+    });
+    return result;
+  }
+
+  function getNextId(arrIds: number[]) {
+    var ids = [0];
+    var allIds = getAllIds(commentsData.comments, ids);
+    var maxId = 0;
+    var i: number;
+    for (i = 0; i < allIds.length; i++) {
+      if (allIds[i] > maxId) maxId = allIds[i];
+    }
+    return maxId++;
+  }
 
   return (
     <div className="App">
